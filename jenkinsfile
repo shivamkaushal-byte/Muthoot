@@ -27,4 +27,7 @@ node{
             sh "ssh -o StrictHostKeyChecking=no ec2-user@44.206.253.171 ${dockerrun}"
         }
     }
+    stage("Email Notification"){
+        emailext body: "Build ${env.BUILD_NUMBER} has completed.", subject: 'Email sent out from Jenkins', to: 'shivamkaushal20@gmail.com'
+    }
 }
