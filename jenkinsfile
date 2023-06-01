@@ -1,0 +1,30 @@
+node{
+    stage("Pull source code from github"){
+        git 'https://github.com/shivamkaushal-byte/Muthoot.git'
+    }
+    stage("Build Dockerfile from source code"){
+        sh 'docker build image -t $JOB_NAME:v1.$BUILD_ID .'
+        sh 'docker tag image $JOB_NAME:v1.BUILD_ID  shivam20/$JOB_NAME:v1.BUILD_ID'
+        sh 'docker tag image $JOB_NAME:v1.BUILD_ID  shivam20/$JOB_NAME:v1.latest'
+    }
+    stage("push docker image to docker hub"){
+        withCredentials([string(credentialsId: 'dockerhubpasswd', variable: 'dockerhubpasswd')]) {
+         sh 'docker login -u shivam20 -p ${dockerhubpasswd}'
+         sh 'docker image push  shivam20/$JOB_NAME:v1.BUILD_ID'
+         sh 'docker image push shivam20/$JOB_NAME:v1.latest'
+         sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID shivam20/$JOB_NAME:v1.BUILD_ID shivam20/$JOB_NAME:v1.latest'
+        }
+    }
+
+    stage("Deployment of Container"){
+        def dockerrun = 'docker container run -it -d -p 8000:80 -name=Demo shivam20/$JOB_NAME:v1.latest'
+        def dockerrm =  'docker container rm -f demo'
+        def dockerimagerm = 'docker image rm shivam20/$JOB_NAME:v1.latest'
+
+        sshagent(['dockerhostpassword']) {
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@44.206.253.171 ${dockerm}"
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@44.206.253.171 ${dockerimagerm}"
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@44.206.253.171 ${dockerrun}"
+        }
+    }
+}
