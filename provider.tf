@@ -3,6 +3,15 @@ access_key = var.access_key
 secret_key = var.secret_key
 region = var.region
 }
+terraform {
+  backend "s3" {
+    bucket         = var.s3_bucket_name
+    key            = "terraform.tfstate"
+    region         = "eu-central-1"
+    encrypt        = true
+    dynamodb_table = "terraform-state-lock"
+  }
+}
 module "vpc"{
   source = "./modules/vpc"
 }
