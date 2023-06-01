@@ -13,6 +13,3 @@ variable "ami_id" {
 variable "instance_type" {
    default = "t2.micro"
 }
-variable "vpc_id" {
-type = string
-}

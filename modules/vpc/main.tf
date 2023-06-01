@@ -24,6 +24,15 @@ resource "aws_subnet" "prod-subnet-private-1" {
       Name = "prod-subnet-private-1"
    }
 }
+resource "aws_subnet" "prod-subnet-public-2" {
+    vpc_id = aws_vpc.prod-vpc.id
+    cidr_block = "10.0.2.0/24"
+    map_public_ip_on_launch = "true"
+    availability_zone = "eu-central-1c"
+    tags = {
+      Name = "prod-subnet-public-2"
+   }
+}
 resource "aws_internet_gateway" "prod-gw" {
   vpc_id = aws_vpc.prod-vpc.id
 
@@ -45,4 +54,8 @@ resource "aws_route_table" "prod-route" {
 resource "aws_route_table_association" "prod-crta-public-subnet-1"{
     subnet_id = aws_subnet.prod-subnet-public-1.id
     route_table_id = aws_route_table.prod-route.id
-}        
+}
+resource "aws_route_table_association" "prod-crta-public-subnet-2"{
+    subnet_id = aws_subnet.prod-subnet-public-2.id
+    route_table_id = aws_route_table.prod-route.id
+}      

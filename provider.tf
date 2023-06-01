@@ -11,3 +11,9 @@ module "ec2"{
   vpc_id = module.vpc.vpc_id
   subnet_id = module.vpc.subnet_id
 }
+module "ALB" {
+   source = "./modules/ALB"
+   vpc_id = module.vpc.vpc_id
+   instance_id = module.ec2.instance-id
+   public_subnet = [module.vpc.subnet_id,module.vpc.subnet_id-2]
+}
